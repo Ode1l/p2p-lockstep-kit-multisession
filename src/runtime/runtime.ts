@@ -642,7 +642,20 @@ export class MultiSessionRuntime<
     except?: ReadonlySet<PeerId>,
     gameScope?: GameId,
   ): void {
-    this.#transport.broadcast(this.#message(type, payload, this.#state.localParticipantId, gameScope), except);
+    const message = this.#message(
+      type,
+      payload,
+      this.#state.localParticipantId,
+      gameScope,
+    );
+    for (const participant of this.#state.participants.values()) {
+      if (participant.id === this.#state.localParticipantId) continue;
+      if (except?.has(participant.peerId)) continue;
+      if (this.#transport.getPeerState(participant.peerId) !== "connected") {
+        continue;
+      }
+      this.#transport.sendTo(participant.peerId, message);
+    }
   }
 
   #message(
