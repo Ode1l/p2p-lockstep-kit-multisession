@@ -24,7 +24,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "pack:check": "node scripts/package-smoke.mjs"
+    "pack:check": "node scripts/package-smoke.mjs",
+    "integration:network": "node scripts/network-integration-smoke.mjs"
   },
   "devDependencies": {
     "tsup": "^8.5.0",

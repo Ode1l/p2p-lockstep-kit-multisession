@@ -145,13 +145,6 @@ export class FakeMultiPeerTransport implements MultiPeerTransport {
     this.network.enqueue(this.localPeerId, peerId, message);
   }
 
-  broadcast(message: unknown, except: ReadonlySet<PeerId> = new Set()): void {
-    this.assertActive();
-    for (const peerId of this.getConnectedPeerIds()) {
-      if (!except.has(peerId)) this.sendTo(peerId, message);
-    }
-  }
-
   getPeerState(peerId: PeerId): PeerConnectionState {
     return this.#states.get(peerId) ?? "disconnected";
   }

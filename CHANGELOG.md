@@ -12,7 +12,10 @@
 - Added per-peer connection state, whole-table offline pause and complete-record
   reconnect synchronization.
 - Added abstract and deterministic fake Full Mesh transports.
+- Added `EndpointMeshTransport`, which combines the independent one-to-one
+  links from `p2p-lockstep-kit-network@0.1.4` at the session layer.
 
 The first version intentionally excludes Undo, spectators, mid-game membership,
 seat changes, coordinator migration, timeout policy, anti-cheat and a production
-WebRTC Full Mesh adapter.
+WebRTC Full Mesh adapter bundled inside this package. The adapter is supplied by
+the separately installable network package.

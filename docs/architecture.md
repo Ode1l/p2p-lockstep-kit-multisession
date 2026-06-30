@@ -23,8 +23,9 @@ flowchart LR
   Sync --> Log
   Core --> Plugin["Deterministic game plugin"]
   Runtime --> Transport["MultiPeerTransport"]
-  Transport --> Adapter["Future WebRTC full-mesh adapter"]
-  Adapter --> Signaling["Existing signaling service"]
+  Transport --> Adapter["Session-owned EndpointMeshTransport"]
+  Adapter --> Endpoint["NetworkEndpoint + 1:1 PeerLinks"]
+  Endpoint --> Signaling["Existing signaling service"]
 ```
 
 Dependency arrows point inward through interfaces. Core code never imports the
@@ -75,9 +76,7 @@ interface MultiPeerTransport {
   connect(peerId: PeerId): Promise<void>;
   disconnect(peerId: PeerId): void;
   sendTo(peerId: PeerId, message: unknown): void;
-  broadcast(message: unknown, except?: ReadonlySet<PeerId>): void;
   getPeerState(peerId: PeerId): PeerConnectionState;
-  getConnectedPeerIds(): readonly PeerId[];
   onMessage(handler: (peerId: PeerId, message: unknown) => void): Unsubscribe;
   onPeerStateChange(
     handler: (peerId: PeerId, state: PeerConnectionState) => void,
@@ -86,12 +85,13 @@ interface MultiPeerTransport {
 }
 ```
 
-The adapter owns `Map<PeerId, RtcPeerLike>`. For each unordered peer pair, the
-peer whose validated Peer ID compares lower by UTF-8 bytes is the only initial
-offerer. Negotiation uses a bounded queue (recommended default: three active
-negotiations). A failed peer is repaired independently with a new peer
-connection. One reliable ordered data channel carries multiplexed protocol
-messages.
+The network endpoint owns only the internal signal-routing map of independent
+one-to-one links. `EndpointMeshTransport` retains the links selected by this
+session. The runtime iterates its participant map for broadcast and, for each
+unordered peer pair, the peer whose validated Peer ID compares lower with the
+shared JavaScript string ordering is the only initial offerer. Runtime
+negotiation uses a bounded queue (recommended default: three active attempts).
+A failed peer is repaired independently with a new connection.
 
 `meshReady` means every currently required participant with a peer binding is
 connected to the local peer (excluding the local participant). At least one

@@ -16,6 +16,7 @@ export * from "./protocol/types";
 export * from "./protocol/validation";
 export * from "./transport/types";
 export * from "./transport/fake";
+export * from "./transport/endpoint";
 export * from "./coordinator/id-factory";
 export * from "./coordinator/commands";
 export * from "./observer";

@@ -16,7 +16,7 @@ session record.
 ## Install
 
 ```bash
-pnpm add p2p-lockstep-kit-multisession
+pnpm add p2p-lockstep-kit-multisession p2p-lockstep-kit-network
 ```
 
 ## Runtime outline
@@ -24,13 +24,19 @@ pnpm add p2p-lockstep-kit-multisession
 ```ts
 import {
   MultiSessionRuntime,
+  EndpointMeshTransport,
   createSessionConfiguration,
   gameId,
   participantId,
-  peerId,
   seatId,
   tableId,
+  type PeerId,
 } from "p2p-lockstep-kit-multisession";
+import { NetworkEndpoint } from "p2p-lockstep-kit-network";
+
+const endpoint = new NetworkEndpoint<PeerId>();
+const { peerId: localPeerId } = await endpoint.register(signalingUrl);
+const transport = new EndpointMeshTransport(endpoint);
 
 const configuration = createSessionConfiguration({
   participantCount: 4,
@@ -43,13 +49,14 @@ const runtime = new MultiSessionRuntime({
   gameId: gameId("game-1"),
   localParticipant: {
     id: participantId("participant-a"),
-    peerId: peerId("peer-a"),
+    peerId: localPeerId,
   },
   coordinatorId: participantId("participant-a"),
-  coordinatorPeerId: peerId("peer-a"),
+  coordinatorPeerId: localPeerId,
   configuration: configuration.value,
   plugin: gamePlugin,
-  transport: multiPeerTransport,
+  transport,
+  ownsTransport: true,
 });
 
 await runtime.start();
@@ -60,8 +67,10 @@ const unsubscribe = runtime.subscribe({
 });
 ```
 
-`gamePlugin` implements `MultiGamePlugin`; `multiPeerTransport` implements
-`MultiPeerTransport`. Every runtime is instance-scoped and must be disposed:
+`gamePlugin` implements `MultiGamePlugin`. `NetworkEndpoint` retains independent
+one-to-one links; `EndpointMeshTransport` and the runtime own the participant
+topology and Full Mesh policy. Every runtime is instance-scoped and must be
+disposed:
 
 ```ts
 unsubscribe();
@@ -85,13 +94,9 @@ requests complete-record synchronization; conflicting hashes stop the runtime.
 
 ## Network integration status
 
-The included `FakeMeshNetwork` is a deterministic test transport, not a server
-or production network. The existing signaling server already supports directed
-relay to multiple Peer IDs and needs no multiplayer changes.
-
-Published `p2p-lockstep-kit-network@0.1.3` exposes a one-remote
-`NetworkClient`. A real Full Mesh adapter requires one existing signaling
-registration plus `Map<PeerId, RTCPeerConnection>`; it cannot be implemented by
-creating many `NetworkClient` instances because the signaling server permits
-only one online WebSocket for a resumed Peer ID. See
+The included `FakeMeshNetwork` remains the deterministic test transport.
+`p2p-lockstep-kit-network@0.1.4` adds `NetworkEndpoint`: one signaling
+registration and WebSocket, exposing independent one-to-one `PeerLink` objects.
+The session package combines those links into its topology. The existing
+one-to-one `NetworkClient` and signaling-server protocol are unchanged. See
 [the adapter boundary](docs/network-adapter.md).
