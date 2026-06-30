@@ -1,0 +1,6 @@
+.idea
+node_modules
+dist
+*.tgz
+coverage
+pnpm-lock.yaml
