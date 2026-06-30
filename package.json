@@ -24,8 +24,14 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "playground:dev": "pnpm --dir playground dev",
+    "playground:build": "pnpm --dir playground build",
+    "playground:test": "pnpm --dir playground test",
     "pack:check": "node scripts/package-smoke.mjs",
     "integration:network": "node scripts/network-integration-smoke.mjs"
+  },
+  "dependencies": {
+    "p2p-lockstep-kit-network": "^0.1.4"
   },
   "devDependencies": {
     "tsup": "^8.5.0",

@@ -13,10 +13,15 @@ The v1 trust model does not provide hidden-information confidentiality or
 anti-cheat protection. Synchronization may transfer the complete existing
 session record.
 
+The repository includes a four-player Mahjong vertical slice in
+[`playground`](playground). Run it with `pnpm playground:dev`; it defaults to a
+four-runtime in-browser simulation and also exposes a real signaling/WebRTC
+connection form.
+
 ## Install
 
 ```bash
-pnpm add p2p-lockstep-kit-multisession p2p-lockstep-kit-network
+pnpm add p2p-lockstep-kit-multisession
 ```
 
 ## Runtime outline
@@ -25,6 +30,7 @@ pnpm add p2p-lockstep-kit-multisession p2p-lockstep-kit-network
 import {
   MultiSessionRuntime,
   EndpointMeshTransport,
+  NetworkEndpoint,
   createSessionConfiguration,
   gameId,
   participantId,
@@ -32,7 +38,6 @@ import {
   tableId,
   type PeerId,
 } from "p2p-lockstep-kit-multisession";
-import { NetworkEndpoint } from "p2p-lockstep-kit-network";
 
 const endpoint = new NetworkEndpoint<PeerId>();
 const { peerId: localPeerId } = await endpoint.register(signalingUrl);

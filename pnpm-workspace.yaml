@@ -1,4 +1,9 @@
+packages:
+  - playground
+
 allowBuilds:
   esbuild: true
+minimumReleaseAgeExclude:
+  - p2p-lockstep-kit-network@0.1.4
 onlyBuiltDependencies:
   - esbuild

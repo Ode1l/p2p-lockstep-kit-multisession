@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { NetworkEndpoint } from "../src/index";
 import { peerId, type PeerId } from "../src/ids";
 import type { PeerConnectionState } from "../src/state/types";
 import {
@@ -88,6 +89,14 @@ class FakeEndpoint implements SharedPeerEndpoint {
 }
 
 describe("EndpointMeshTransport", () => {
+  it("accepts the published network endpoint through the structural boundary", () => {
+    const endpoint = new NetworkEndpoint<PeerId>();
+    const compatible: SharedPeerEndpoint = endpoint;
+
+    expect(compatible.localPeerId).toBeNull();
+    endpoint.dispose();
+  });
+
   it("adapts independent links while keeping aggregate behavior in session", async () => {
     const endpoint = new FakeEndpoint(peerId("peer-local"));
     const transport = new EndpointMeshTransport(endpoint);

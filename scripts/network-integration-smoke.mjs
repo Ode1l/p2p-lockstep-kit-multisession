@@ -7,11 +7,10 @@ import {
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { dirname, join, resolve } from "node:path";
+import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const multisessionRoot = resolve(fileURLToPath(new URL("..", import.meta.url)));
-const networkRoot = resolve(dirname(multisessionRoot), "p2p-lockstep-kit-network");
 const temporary = mkdtempSync(join(tmpdir(), "multisession-network-smoke-"));
 const consumer = join(temporary, "consumer");
 
@@ -33,11 +32,6 @@ try {
     multisessionRoot,
     "p2p-lockstep-kit-multisession-",
   );
-  const networkTarball = pack(
-    "npm",
-    networkRoot,
-    "p2p-lockstep-kit-network-",
-  );
 
   mkdirSync(consumer);
   writeFileSync(
@@ -49,7 +43,6 @@ try {
         type: "module",
         dependencies: {
           "p2p-lockstep-kit-multisession": `file:${multisessionTarball}`,
-          "p2p-lockstep-kit-network": `file:${networkTarball}`,
         },
       },
       null,
@@ -58,8 +51,7 @@ try {
   );
   writeFileSync(
     join(consumer, "types.ts"),
-    `import { NetworkEndpoint } from "p2p-lockstep-kit-network";\n` +
-      `import { EndpointMeshTransport, type MultiPeerTransport, type PeerId, type SharedPeerEndpoint } from "p2p-lockstep-kit-multisession";\n` +
+    `import { EndpointMeshTransport, NetworkEndpoint, type MultiPeerTransport, type PeerId, type SharedPeerEndpoint } from "p2p-lockstep-kit-multisession";\n` +
       `const endpoint = new NetworkEndpoint<PeerId>();\n` +
       `const compatible: SharedPeerEndpoint = endpoint;\n` +
       `const createTransport = async (): Promise<MultiPeerTransport> => {\n` +
@@ -72,8 +64,7 @@ try {
   );
   writeFileSync(
     join(consumer, "runtime.mjs"),
-    `import { NetworkEndpoint } from "p2p-lockstep-kit-network";\n` +
-      `import { participantId } from "p2p-lockstep-kit-multisession";\n` +
+    `import { NetworkEndpoint, participantId } from "p2p-lockstep-kit-multisession";\n` +
       `const endpoint = new NetworkEndpoint();\n` +
       `if (participantId("consumer-1") !== "consumer-1") throw new Error("runtime import failed");\n` +
       `endpoint.dispose();\n`,

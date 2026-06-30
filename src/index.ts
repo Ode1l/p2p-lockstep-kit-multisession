@@ -21,3 +21,13 @@ export * from "./coordinator/id-factory";
 export * from "./coordinator/commands";
 export * from "./observer";
 export * from "./runtime/runtime";
+export { NetworkEndpoint } from "p2p-lockstep-kit-network";
+export type {
+  EndpointRtcPeer,
+  EndpointRtcPeerFactory,
+  EndpointRtcPeerFactoryInput,
+  EndpointSignalingClient,
+  NetworkEndpointOptions,
+  PeerLink,
+  PeerLinkState,
+} from "p2p-lockstep-kit-network";

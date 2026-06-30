@@ -37,9 +37,9 @@ unless separately designed.
 ## Usage
 
 ```ts
-import { NetworkEndpoint } from "p2p-lockstep-kit-network";
 import {
   EndpointMeshTransport,
+  NetworkEndpoint,
   type MultiPeerTransport,
   type PeerId,
 } from "p2p-lockstep-kit-multisession";

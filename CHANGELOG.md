@@ -14,6 +14,8 @@
 - Added abstract and deterministic fake Full Mesh transports.
 - Added `EndpointMeshTransport`, which combines the independent one-to-one
   links from `p2p-lockstep-kit-network@0.1.4` at the session layer.
+- Integrated network `^0.1.4` as a runtime dependency and re-exported its
+  endpoint/link API from the multisession package entry point.
 
 The first version intentionally excludes Undo, spectators, mid-game membership,
 seat changes, coordinator migration, timeout policy, anti-cheat and a production
